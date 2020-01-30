@@ -1834,8 +1834,11 @@ const Github = __webpack_require__(455);
     const artifact = core.getInput('ARTIFACT_NAME', {required: true});
     const token    = core.getInput('GITHUB_TOKEN', {required: true});
 
-    const workflows = await Github.getAllWorkflows(owner, repo, token);
-    console.log(JSON.stringify(workflows, null, 2));
+    const found              = await Github.findWorkflowWithId(owner, repo, token, workflow);
+    const latestRun          = await Github.findLatestRunForWorkflow(owner, repo, token, found.id);
+    const artifactToDownload = await Github.findArtifactsForRun(owner, repo, token, latestRun.id, artifact);
+
+    console.log(artifactToDownload);
   } catch (e) {
     core.setFailed(e.message);
   }
@@ -15707,7 +15710,7 @@ module.exports = getRawTag;
 
 const rp = __webpack_require__(483);
 
-function getAllWorkflows(owner, repo, accessToken) {
+function findWorkflowWithId(owner, repo, accessToken, workflow) {
   const options = {
     url:     `https://api.github.com/repos/${owner}/${repo}/actions/workflows`,
     headers: {
@@ -15717,12 +15720,56 @@ function getAllWorkflows(owner, repo, accessToken) {
   };
 
   return rp(options).then(function (json) {
-    return JSON.parse(json);
+    let all     = JSON.parse(json);
+    const found = all.workflows.find(w => w.name === workflow);
+
+    if (!found) {
+      throw `Could not find a workflow with name '${workflow}' for the specified repository!`;
+    }
+
+    return found.id;
+  });
+}
+
+function findLatestRunForWorkflow(owner, repo, accessToken, workflowId) {
+  const options = {
+    url:     `https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflowId}/runs`,
+    headers: {
+      'Authorization': `bearer ${accessToken}`,
+      'User-Agent':    'download-artifact-github-action'
+    }
+  };
+
+  return rp(options).then(function (json) {
+    return JSON.parse(json).workflow_runs[0];
+  });
+}
+
+function findArtifactsForRun(owner, repo, accessToken, runId, artifact) {
+  const options = {
+    url:     `https://api.github.com/repos/${owner}/${repo}/actions/runs/${runId}/artifacts`,
+    headers: {
+      'Authorization': `bearer ${accessToken}`,
+      'User-Agent':    'download-artifact-github-action'
+    }
+  };
+
+  return rp(options).then(function (json) {
+    const all   = JSON.parse(json);
+    const found = all.artifacts.find((a) => a.name === artifact);
+
+    if (!found) {
+      throw `Could not find the artifact with name '${artifact}' for the ${runId} workflow run!`;
+    }
+
+    return found;
   });
 }
 
 module.exports = {
-  getAllWorkflows
+  findWorkflowWithId,
+  findLatestRunForWorkflow,
+  findArtifactsForRun
 };
 
 

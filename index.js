@@ -9,8 +9,11 @@ const Github = require('./util/github');
     const artifact = core.getInput('ARTIFACT_NAME', {required: true});
     const token    = core.getInput('GITHUB_TOKEN', {required: true});
 
-    const workflows = await Github.getAllWorkflows(owner, repo, token);
-    console.log(JSON.stringify(workflows, null, 2));
+    const found              = await Github.findWorkflowWithId(owner, repo, token, workflow);
+    const latestRun          = await Github.findLatestRunForWorkflow(owner, repo, token, found.id);
+    const artifactToDownload = await Github.findArtifactsForRun(owner, repo, token, latestRun.id, artifact);
+
+    console.log(artifactToDownload);
   } catch (e) {
     core.setFailed(e.message);
   }

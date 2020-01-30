@@ -15709,6 +15709,7 @@ function getAllWorkflows(owner, repo, accessToken) {
     url:     `https://api.github.com/repos/${owner}/${repo}/actions/workflows`,
     headers: {
       'Authorization': `bearer ${accessToken}`,
+      'User-Agent': 'GaneshSPatil/download-artifact'
     }
   };
 

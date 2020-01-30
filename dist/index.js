@@ -1823,20 +1823,23 @@ module.exports = require("tls");
 /* 19 */
 /***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
 
-const core = __webpack_require__(708);
+const core   = __webpack_require__(708);
 const Github = __webpack_require__(455);
 
 (async function () {
-  const owner    = core.getInput('REPOSITORY_OWNER', {required: true});
-  const repo     = core.getInput('REPOSITORY_NAME', {required: true});
-  const workflow = core.getInput('WORKFLOW_NAME', {required: true});
-  const artifact = core.getInput('ARTIFACT_NAME', {required: true});
-  const token    = core.getInput('GITHUB_TOKEN', {required: true});
+  try {
+    const owner    = core.getInput('REPOSITORY_OWNER', {required: true});
+    const repo     = core.getInput('REPOSITORY_NAME', {required: true});
+    const workflow = core.getInput('WORKFLOW_NAME', {required: true});
+    const artifact = core.getInput('ARTIFACT_NAME', {required: true});
+    const token    = core.getInput('GITHUB_TOKEN', {required: true});
 
-  const workflows = await Github.getAllWorkflows(owner, repo, token);
-  console.log(JSON.stringify(workflows, null, 2));
+    const workflows = await Github.getAllWorkflows(owner, repo, token);
+    console.log(JSON.stringify(workflows, null, 2));
+  } catch (e) {
+    core.setFailed(e.message);
+  }
 })();
-console.log(`Hello World!`);
 
 
 /***/ }),
@@ -15709,7 +15712,7 @@ function getAllWorkflows(owner, repo, accessToken) {
     url:     `https://api.github.com/repos/${owner}/${repo}/actions/workflows`,
     headers: {
       'Authorization': `bearer ${accessToken}`,
-      'User-Agent': 'GaneshSPatil/download-artifact'
+      'User-Agent':    'download-artifact-github-action'
     }
   };
 

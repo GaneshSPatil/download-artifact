@@ -2,6 +2,9 @@ name: 'Download Artifact'
 description: 'Download a build artifact that was uploaded by any Github workflow'
 author: 'Ganesh Patil'
 inputs:
+  GITHUB_TOKEN:
+    description: 'The Github access token'
+    required: true
   REPOSITORY_OWNER:
     description: 'The organization or person who own the Github repository'
     required: true
@@ -16,4 +19,4 @@ inputs:
     required: true
 runs:
   using: 'node12'
-  main: 'index.js'
+  main: 'dist/index.js'

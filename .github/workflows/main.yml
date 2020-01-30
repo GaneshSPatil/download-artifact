@@ -12,5 +12,5 @@ jobs:
           REPOSITORY_NAME: 'upstream'
           WORKFLOW_NAME: 'Generate Test Artifact'
           ARTIFACT_NAME: 'my-artifact'
-
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: cat my-artifact

@@ -1,4 +1,8 @@
-const rp = require('request-promise');
+const fs           = require('fs');
+const https        = require('https');
+const AdmZip       = require('adm-zip');
+const rp           = require('request-promise');
+const randomstring = require("randomstring");
 
 function findWorkflowWithId(owner, repo, accessToken, workflow) {
   const options = {
@@ -17,7 +21,7 @@ function findWorkflowWithId(owner, repo, accessToken, workflow) {
       throw `Could not find a workflow with name '${workflow}' for the specified repository!`;
     }
 
-    return found.id;
+    return found;
   });
 }
 
@@ -56,8 +60,36 @@ function findArtifactsForRun(owner, repo, accessToken, runId, artifact) {
   });
 }
 
+function downloadFile(artifact, accessToken) {
+  const options = {
+    url:            artifact.archive_download_url,
+    headers:        {
+      'Authorization': `bearer ${accessToken}`,
+      'User-Agent':    'download-artifact-github-action'
+    },
+    followRedirect: false
+  };
+
+  return rp(options).catch(async (res) => {
+    const location    = res.response.headers.location;
+    const zipFileName = `downloaded-${randomstring.generate()}.zip`;
+
+    const file = fs.createWriteStream(zipFileName);
+    await https.get(location, function (response) {
+      const stream = response.pipe(file);
+      stream.on('finish', function () {
+        const zip = new AdmZip(`${zipFileName}`);
+        zip.extractAllTo(process.cwd());
+
+      });
+    });
+  });
+}
+
+
 module.exports = {
   findWorkflowWithId,
   findLatestRunForWorkflow,
-  findArtifactsForRun
+  findArtifactsForRun,
+  downloadFile
 };

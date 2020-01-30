@@ -19,6 +19,8 @@
   "homepage": "https://github.com/GaneshSPatil/download-artifact#readme",
   "dependencies": {
     "@actions/core": "^1.2.2",
+    "adm-zip": "^0.4.13",
+    "randomstring": "^1.1.5",
     "request": "^2.88.0",
     "request-promise": "^4.2.5"
   }

@@ -13,7 +13,7 @@ const Github = require('./util/github');
     const latestRun          = await Github.findLatestRunForWorkflow(owner, repo, token, found.id);
     const artifactToDownload = await Github.findArtifactsForRun(owner, repo, token, latestRun.id, artifact);
 
-    console.log(artifactToDownload);
+    await Github.downloadFile(artifactToDownload, token);
   } catch (e) {
     core.setFailed(e.message);
   }

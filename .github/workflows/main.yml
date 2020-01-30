@@ -1,0 +1,16 @@
+on: [push]
+
+jobs:
+  download_artifact:
+    runs-on: ubuntu-latest
+    name: A job to download artifact from GaneshSPatil/upstream repository
+    steps:
+      - name: download_artifact
+        uses: GaneshSPatil/download-artifact@master
+        with:
+          REPOSITORY_OWNER: 'GaneshSPatil'
+          REPOSITORY_NAME: 'upstream'
+          WORKFLOW_NAME: 'Generate Test Artifact'
+          ARTIFACT_NAME: 'my-artifact'
+
+      - run: cat my-artifact

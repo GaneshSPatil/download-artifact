@@ -1,0 +1,19 @@
+name: 'Download Artifact'
+description: 'Download a build artifact that was uploaded by any Github workflow'
+author: 'Ganesh Patil'
+inputs:
+  REPOSITORY_OWNER:
+    description: 'The organization or person who own the Github repository'
+    required: true
+  REPOSITORY_NAME:
+    description: 'The name of the Github repository'
+    required: true
+  WORKFLOW_NAME:
+    description: 'The name of the Github workflow to download the artifact from'
+    required: true
+  ARTIFACT_NAME:
+    description: 'The name of the Artifact to download.'
+    required: true
+runs:
+  using: 'node12'
+  main: 'index.js'

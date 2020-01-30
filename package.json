@@ -1,0 +1,23 @@
+{
+  "name": "download-artifact",
+  "version": "1.0.0",
+  "description": "a Github action to download artifact from any workflow",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GaneshSPatil/download-artifact.git"
+  },
+  "keywords": [],
+  "author": "GaneshSPatil",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GaneshSPatil/download-artifact/issues"
+  },
+  "homepage": "https://github.com/GaneshSPatil/download-artifact#readme",
+  "dependencies": {
+    "@actions/core": "^1.2.2"
+  }
+}

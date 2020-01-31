@@ -86,7 +86,7 @@ function downloadFile(artifact, pathToDownload, shouldUnzip, accessToken) {
           fs.copyFileSync(zipFileName, `${pathToDownload}/${zipFileName}`);
         }
 
-        console.log(fs.readdirSync(path));
+        console.log(fs.readdirSync(pathToDownload));
         console.log(`Done!!`);
       });
     });

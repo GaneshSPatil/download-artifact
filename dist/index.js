@@ -16803,10 +16803,12 @@ function downloadFile(artifact, pathToDownload, shouldUnzip, accessToken) {
   };
 
   return rp(options).catch(async (res) => {
-    const location    = res.response.headers.location;
-    const zipFileName = `${pathToDownload}/${artifact.name}`;
+    const location = res.response.headers.location;
+    !fs.existsSync(pathToDownload) && fs.mkdirSync(pathToDownload, {recursive: true});
 
-    const file = fs.createWriteStream(zipFileName);
+    const zipFileName = `${pathToDownload}/${artifact.name}`;
+    const file        = fs.createWriteStream(zipFileName);
+
     await https.get(location, function (response) {
       const stream = response.pipe(file);
 

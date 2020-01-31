@@ -1844,10 +1844,16 @@ const Github = __webpack_require__(455);
     const token           = core.getInput('GITHUB_TOKEN', {required: true});
     const unzipOnDownload = !!core.getInput('UNZIP_ON_DOWNLOAD');
 
-    const found              = await Github.findWorkflowWithId(owner, repo, token, workflow);
-    const latestRun          = await Github.findLatestRunForWorkflow(owner, repo, token, found.id);
+    console.log(`Fetching workflow id for '${workflow}' workflow...`);
+    const found = await Github.findWorkflowWithId(owner, repo, token, workflow);
+
+    console.log(`Fetching the latest run for the workflow '${workflow}' (id: ${found.id})...`);
+    const latestRun = await Github.findLatestRunForWorkflow(owner, repo, token, found.id);
+
+    console.log(`Fetching the artifact information from workflow run ${workflow}(id:${latestRun.id})...`);
     const artifactToDownload = await Github.findArtifactsForRun(owner, repo, token, latestRun.id, artifact);
 
+    console.log(`Downloading artifact '${artifactToDownload.name}' from url: ${artifactToDownload.archive_download_url}`);
     await Github.downloadFile(artifactToDownload, unzipOnDownload, token);
   } catch (e) {
     core.setFailed(e.message);
@@ -16802,12 +16808,19 @@ function downloadFile(artifact, shouldUnzip, accessToken) {
     await https.get(location, function (response) {
       const stream = response.pipe(file);
 
-      if (shouldUnzip) {
-        stream.on('finish', function () {
-          const zip = new AdmZip(`${zipFileName}`);
-          zip.extractAllTo(process.cwd());
-        });
-      }
+      stream.on('finish', function () {
+        if (shouldUnzip) {
+          console.log(`Unzipping the downloaded artifact...`);
+
+          const pathToExtract = process.cwd();
+          const zip           = new AdmZip(`${zipFileName}`);
+
+          zip.extractAllTo(pathToExtract);
+          console.log(fs.readdirSync(pathToExtract));
+        }
+
+        console.log(`Done!!`);
+      });
     });
   });
 }

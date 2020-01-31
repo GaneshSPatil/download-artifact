@@ -77,12 +77,19 @@ function downloadFile(artifact, shouldUnzip, accessToken) {
     await https.get(location, function (response) {
       const stream = response.pipe(file);
 
-      if (shouldUnzip) {
-        stream.on('finish', function () {
-          const zip = new AdmZip(`${zipFileName}`);
-          zip.extractAllTo(process.cwd());
-        });
-      }
+      stream.on('finish', function () {
+        if (shouldUnzip) {
+          console.log(`Unzipping the downloaded artifact...`);
+
+          const pathToExtract = process.cwd();
+          const zip           = new AdmZip(`${zipFileName}`);
+
+          zip.extractAllTo(pathToExtract);
+          console.log(fs.readdirSync(pathToExtract));
+        }
+
+        console.log(`Done!!`);
+      });
     });
   });
 }

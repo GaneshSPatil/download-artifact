@@ -1842,6 +1842,8 @@ const Github = __webpack_require__(455);
     const workflow        = core.getInput('WORKFLOW_NAME', {required: true});
     const artifact        = core.getInput('ARTIFACT_NAME', {required: true});
     const token           = core.getInput('GITHUB_TOKEN', {required: true});
+    let pathToDownload    = core.getInput('PATH_TO_DOWNLOAD');
+    pathToDownload        = pathToDownload ? pathToDownload : process.pwd();
     const unzipOnDownload = !!core.getInput('UNZIP_ON_DOWNLOAD');
 
     console.log(`Fetching workflow id for '${workflow}' workflow...`);
@@ -1854,7 +1856,7 @@ const Github = __webpack_require__(455);
     const artifactToDownload = await Github.findArtifactsForRun(owner, repo, token, latestRun.id, artifact);
 
     console.log(`Downloading artifact '${artifactToDownload.name}' from url: ${artifactToDownload.archive_download_url}`);
-    await Github.downloadFile(artifactToDownload, unzipOnDownload, token);
+    await Github.downloadFile(artifactToDownload, pathToDownload, unzipOnDownload, token);
   } catch (e) {
     core.setFailed(e.message);
   }
@@ -16790,7 +16792,7 @@ function findArtifactsForRun(owner, repo, accessToken, runId, artifact) {
   });
 }
 
-function downloadFile(artifact, shouldUnzip, accessToken) {
+function downloadFile(artifact, pathToDownload, shouldUnzip, accessToken) {
   const options = {
     url:            artifact.archive_download_url,
     headers:        {
@@ -16811,14 +16813,13 @@ function downloadFile(artifact, shouldUnzip, accessToken) {
       stream.on('finish', function () {
         if (shouldUnzip) {
           console.log(`Unzipping the downloaded artifact...`);
-
-          const pathToExtract = process.cwd();
-          const zip           = new AdmZip(`${zipFileName}`);
-
-          zip.extractAllTo(pathToExtract);
-          console.log(fs.readdirSync(pathToExtract));
+          const zip = new AdmZip(`${zipFileName}`);
+          zip.extractAllTo(pathToDownload, true);
+        } else {
+          fs.copyFileSync(zipFileName, `${pathToDownload}/${zipFileName}`);
         }
 
+        console.log(fs.readdirSync(path));
         console.log(`Done!!`);
       });
     });

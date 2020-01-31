@@ -59,7 +59,7 @@ function findArtifactsForRun(owner, repo, accessToken, runId, artifact) {
   });
 }
 
-function downloadFile(artifact, shouldUnzip, accessToken) {
+function downloadFile(artifact, pathToDownload, shouldUnzip, accessToken) {
   const options = {
     url:            artifact.archive_download_url,
     headers:        {
@@ -80,14 +80,13 @@ function downloadFile(artifact, shouldUnzip, accessToken) {
       stream.on('finish', function () {
         if (shouldUnzip) {
           console.log(`Unzipping the downloaded artifact...`);
-
-          const pathToExtract = process.cwd();
-          const zip           = new AdmZip(`${zipFileName}`);
-
-          zip.extractAllTo(pathToExtract);
-          console.log(fs.readdirSync(pathToExtract));
+          const zip = new AdmZip(`${zipFileName}`);
+          zip.extractAllTo(pathToDownload, true);
+        } else {
+          fs.copyFileSync(zipFileName, `${pathToDownload}/${zipFileName}`);
         }
 
+        console.log(fs.readdirSync(path));
         console.log(`Done!!`);
       });
     });

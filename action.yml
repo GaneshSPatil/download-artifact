@@ -17,8 +17,11 @@ inputs:
   ARTIFACT_NAME:
     description: 'The name of the Artifact to download.'
     required: true
+  PATH_TO_DOWNLOAD:
+    description: 'Path to download the artifact file. Defaults to current working directory.'
+    required: false
   UNZIP_ON_DOWNLOAD:
-    description: 'Unzip the downloaded artifact'
+    description: 'Unzip the downloaded artifact. Defaults to false.'
     required: false
 runs:
   using: 'node12'

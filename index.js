@@ -8,6 +8,8 @@ const Github = require('./util/github');
     const workflow        = core.getInput('WORKFLOW_NAME', {required: true});
     const artifact        = core.getInput('ARTIFACT_NAME', {required: true});
     const token           = core.getInput('GITHUB_TOKEN', {required: true});
+    let pathToDownload    = core.getInput('PATH_TO_DOWNLOAD');
+    pathToDownload        = pathToDownload ? pathToDownload : process.pwd();
     const unzipOnDownload = !!core.getInput('UNZIP_ON_DOWNLOAD');
 
     console.log(`Fetching workflow id for '${workflow}' workflow...`);
@@ -20,7 +22,7 @@ const Github = require('./util/github');
     const artifactToDownload = await Github.findArtifactsForRun(owner, repo, token, latestRun.id, artifact);
 
     console.log(`Downloading artifact '${artifactToDownload.name}' from url: ${artifactToDownload.archive_download_url}`);
-    await Github.downloadFile(artifactToDownload, unzipOnDownload, token);
+    await Github.downloadFile(artifactToDownload, pathToDownload, unzipOnDownload, token);
   } catch (e) {
     core.setFailed(e.message);
   }

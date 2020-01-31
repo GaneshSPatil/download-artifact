@@ -14,4 +14,5 @@ jobs:
           ARTIFACT_NAME: 'my-artifact'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           UNZIP_ON_DOWNLOAD: true
+          PATH_TO_DOWNLOAD: '/path/to/download'
       - run: ls

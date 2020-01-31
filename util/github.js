@@ -1,8 +1,7 @@
-const fs           = require('fs');
-const https        = require('https');
-const AdmZip       = require('adm-zip');
-const rp           = require('request-promise');
-const randomstring = require("randomstring");
+const fs     = require('fs');
+const https  = require('https');
+const AdmZip = require('adm-zip');
+const rp     = require('request-promise');
 
 function findWorkflowWithId(owner, repo, accessToken, workflow) {
   const options = {
@@ -60,7 +59,7 @@ function findArtifactsForRun(owner, repo, accessToken, runId, artifact) {
   });
 }
 
-function downloadFile(artifact, accessToken) {
+function downloadFile(artifact, shouldUnzip, accessToken) {
   const options = {
     url:            artifact.archive_download_url,
     headers:        {
@@ -72,16 +71,18 @@ function downloadFile(artifact, accessToken) {
 
   return rp(options).catch(async (res) => {
     const location    = res.response.headers.location;
-    const zipFileName = `downloaded-${randomstring.generate()}.zip`;
+    const zipFileName = artifact.name;
 
     const file = fs.createWriteStream(zipFileName);
     await https.get(location, function (response) {
       const stream = response.pipe(file);
-      stream.on('finish', function () {
-        const zip = new AdmZip(`${zipFileName}`);
-        zip.extractAllTo(process.cwd());
 
-      });
+      if (shouldUnzip) {
+        stream.on('finish', function () {
+          const zip = new AdmZip(`${zipFileName}`);
+          zip.extractAllTo(process.cwd());
+        });
+      }
     });
   });
 }

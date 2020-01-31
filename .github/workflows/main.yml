@@ -13,4 +13,4 @@ jobs:
           WORKFLOW_NAME: 'Generate Test Artifact'
           ARTIFACT_NAME: 'my-artifact'
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - run: cat my-artifact
+      - run: ls my-artifact

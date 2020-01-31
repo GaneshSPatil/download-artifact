@@ -17,6 +17,9 @@ inputs:
   ARTIFACT_NAME:
     description: 'The name of the Artifact to download.'
     required: true
+  UNZIP_ON_DOWNLOAD:
+    description: 'Unzip the downloaded artifact'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

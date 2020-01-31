@@ -71,7 +71,7 @@ function downloadFile(artifact, pathToDownload, shouldUnzip, accessToken) {
 
   return rp(options).catch(async (res) => {
     const location    = res.response.headers.location;
-    const zipFileName = artifact.name;
+    const zipFileName = `${pathToDownload}/${artifact.name}`;
 
     const file = fs.createWriteStream(zipFileName);
     await https.get(location, function (response) {
@@ -82,8 +82,6 @@ function downloadFile(artifact, pathToDownload, shouldUnzip, accessToken) {
           console.log(`Unzipping the downloaded artifact...`);
           const zip = new AdmZip(`${zipFileName}`);
           zip.extractAllTo(pathToDownload, true);
-        } else {
-          fs.copyFileSync(zipFileName, `${pathToDownload}/${zipFileName}`);
         }
 
         console.log(fs.readdirSync(pathToDownload));

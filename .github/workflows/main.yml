@@ -15,4 +15,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           UNZIP_ON_DOWNLOAD: true
           PATH_TO_DOWNLOAD: 'path/to/download'
-      - run: ls
+      - run: ls path/to/download
